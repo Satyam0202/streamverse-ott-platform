@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - StreamVerse</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .profile-page {
+            padding-top: 100px;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+        
+        .profile-header {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 50px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+        }
+        
+        .profile-info h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            color: #aaa;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .profile-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 50px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .clear-btn {
+            background: rgba(255,0,0,0.2);
+            border: 1px solid rgba(255,0,0,0.4);
+            color: #ff4444;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-btn:hover {
+            background: rgba(255,0,0,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <span class="logo-text">Stream</span><span class="logo-accent">Verse</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="search.html">Search</a>
+                <a href="profile.html" class="active">My List</a>
+            </div>
+            <div class="nav-right">
+                <a href="profile.html" class="profile-btn">Profile</a>
+                <a href="admin.html" class="admin-btn" id="adminBtn" style="display: none;">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-page">
+        <div class="profile-header">
+            <div class="profile-avatar">U</div>
+            <div class="profile-info">
+                <h1>User Profile</h1>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="watchedCount">0</span>
+                        <span>Watched</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="myListCount">0</span>
+                        <span>My List</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="hoursWatched">0</span>
+                        <span>Hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <!-- Continue Watching -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Continue Watching</h2>
+                    <button class="clear-btn" onclick="clearContinueWatching()">Clear All</button>
+                </div>
+                <div class="movie-row" id="continueWatching"></div>
+            </section>
+
+            <!-- My List -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">My List</h2>
+                    <button class="clear-btn" onclick="clearMyList()">Clear All</button>
+                </div>
+                <div class="movie-row" id="myList"></div>
+            </section>
+
+            <!-- Watch History -->
+            <section class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Watch History</h2>
+                    <button class="clear-btn" onclick="clearHistory()">Clear All</button>
+                </div>
+                <div class="movie-row" id="watchHistory"></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="movieModal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check if admin was unlocked
+        const adminBtn = document.getElementById('adminBtn');
+        if (adminBtn && sessionStorage.getItem('adminUnlocked') === 'true') {
+            adminBtn.style.display = 'block';
+        }
+        
+        function loadProfile() {
+            // Continue Watching
+            const continueContainer = document.getElementById('continueWatching');
+            const history = getWatchHistory();
+            const inProgress = history.filter(item => item.progress > 0 && item.progress < 95);
+            
+            if (inProgress.length === 0) {
+                continueContainer.innerHTML = '<p style="color: #666; padding: 20px;">No movies in progress</p>';
+            } else {
+                const movies = inProgress.map(item => moviesDB[item.id]).filter(m => m);
+                continueContainer.innerHTML = movies.map(m => renderMovieCard(m, true)).join('');
+            }
+
+            // My List
+            const myListContainer = document.getElementById('myList');
+            const myList = getMyList();
+            
+            if (myList.length === 0) {
+                myListContainer.innerHTML = '<p style="color: #666; padding: 20px;">Your list is empty</p>';
+            } else {
+                const movies = myList.map(id => moviesDB[id]).filter(m => m);
+                myListContainer.innerHTML = movies.map(m => renderMovieCard(m)).join('');
+            }
+
+            // Watch History
+            const historyContainer = document.getElementById('watchHistory');
+            if (history.length === 0) {
+                historyContainer.innerHTML = '<p style="color: #666; padding: 20px;">No watch history</p>';
+            } else {
+                const movies = history.map(item => moviesDB[item.id]).filter(m => m);
+                historyContainer.innerHTML = movies.map(m => renderMovieCard(m)).join('');
+            }
+
+            // Update stats
+            document.getElementById('watchedCount').textContent = history.length;
+            document.getElementById('myListCount').textContent = myList.length;
+            document.getElementById('hoursWatched').textContent = Math.floor(history.length * 2.5); // Estimate
+        }
+
+        function clearContinueWatching() {
+            if (confirm('Clear all continue watching items?')) {
+                const history = getWatchHistory();
+                const cleared = history.map(item => ({...item, progress: 0}));
+                localStorage.setItem('watchHistory', JSON.stringify(cleared));
+                loadProfile();
+            }
+        }
+
+        function clearMyList() {
+            if (confirm('Clear your entire list?')) {
+                localStorage.setItem('myList', JSON.stringify([]));
+                loadProfile();
+            }
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all watch history?')) {
+                localStorage.setItem('watchHistory', JSON.stringify([]));
+                loadProfile();
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

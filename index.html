@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVerse - Premium OTT Platform</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">Stream</span><span class="logo-accent">Verse</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="search.html">Search</a>
+                <a href="#trending">Trending</a>
+                <a href="profile.html">My List</a>
+            </div>
+            <div class="nav-right">
+                <input type="text" class="search-input" placeholder="Search movies..." id="quickSearch">
+                <a href="profile.html" class="profile-btn">Profile</a>
+                <a href="admin.html" class="admin-btn" id="adminBtn" style="display: none;">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">The Dark Knight</h1>
+            <p class="hero-description">When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.</p>
+            <div class="hero-buttons">
+                <button class="btn-play" onclick="playMovie('dark-knight')">
+                    <span>▶</span> Play Now
+                </button>
+                <button class="btn-info">
+                    <span>ℹ</span> More Info
+                </button>
+                <button class="btn-trailer" onclick="playTrailer('dark-knight')">
+                    <span>🎬</span> Trailer
+                </button>
+            </div>
+            <div class="hero-meta">
+                <span class="rating">⭐ 9.0</span>
+                <span class="year">2008</span>
+                <span class="duration">2h 32m</span>
+                <span class="genre">Action, Crime, Drama</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Continue Watching -->
+    <section class="content-section">
+        <h2 class="section-title">Continue Watching</h2>
+        <div class="movie-row" id="continueWatching">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Trending Now -->
+    <section class="content-section" id="trending">
+        <h2 class="section-title">🔥 Trending Now</h2>
+        <div class="movie-row" id="trendingMovies">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Action Movies -->
+    <section class="content-section">
+        <h2 class="section-title">Action & Adventure</h2>
+        <div class="movie-row" id="actionMovies">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Drama -->
+    <section class="content-section">
+        <h2 class="section-title">Drama</h2>
+        <div class="movie-row" id="dramaMovies">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Sci-Fi -->
+    <section class="content-section">
+        <h2 class="section-title">Sci-Fi & Fantasy</h2>
+        <div class="movie-row" id="scifiMovies">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Comedy -->
+    <section class="content-section">
+        <h2 class="section-title">Comedy</h2>
+        <div class="movie-row" id="comedyMovies">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Horror -->
+    <section class="content-section">
+        <h2 class="section-title">Horror & Thriller</h2>
+        <div class="movie-row" id="horrorMovies">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- Movie Modal -->
+    <div class="modal" id="movieModal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Trailer Modal -->
+    <div class="modal" id="trailerModal">
+        <div class="modal-backdrop" onclick="closeTrailerModal()"></div>
+        <div class="modal-content trailer-modal">
+            <button class="modal-close" onclick="closeTrailerModal()">✕</button>
+            <div class="trailer-container" id="trailerContainer">
+                <!-- Trailer video -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

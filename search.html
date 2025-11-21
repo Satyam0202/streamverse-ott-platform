@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - StreamVerse</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .search-page {
+            padding-top: 100px;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+        
+        .search-header {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 50px 40px;
+        }
+        
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            padding: 20px 30px;
+            font-size: 20px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus {
+            border-color: #ff006e;
+            box-shadow: 0 0 30px rgba(255,0,110,0.4);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+        
+        .search-results {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 50px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 100px 20px;
+            color: #666;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <span class="logo-text">Stream</span><span class="logo-accent">Verse</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="search.html" class="active">Search</a>
+                <a href="profile.html">My List</a>
+            </div>
+            <div class="nav-right">
+                <a href="profile.html" class="profile-btn">Profile</a>
+                <a href="admin.html" class="admin-btn" id="adminBtn" style="display: none;">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-page">
+        <div class="search-header">
+            <input type="text" class="search-box" id="searchInput" placeholder="Search for movies..." autofocus>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="action">Action</button>
+                <button class="filter-btn" data-filter="drama">Drama</button>
+                <button class="filter-btn" data-filter="scifi">Sci-Fi</button>
+                <button class="filter-btn" data-filter="comedy">Comedy</button>
+                <button class="filter-btn" data-filter="horror">Horror</button>
+            </div>
+        </div>
+
+        <div class="search-results">
+            <h2 class="section-title" id="resultsTitle">All Movies</h2>
+            <div class="results-grid" id="resultsGrid"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="movieModal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check if admin was unlocked
+        const adminBtn = document.getElementById('adminBtn');
+        if (adminBtn && sessionStorage.getItem('adminUnlocked') === 'true') {
+            adminBtn.style.display = 'block';
+        }
+        
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // Get URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = urlParams.get('q');
+        if (initialQuery) {
+            document.getElementById('searchInput').value = initialQuery;
+            searchQuery = initialQuery.toLowerCase();
+        }
+
+        // Search function
+        function performSearch() {
+            const resultsGrid = document.getElementById('resultsGrid');
+            const resultsTitle = document.getElementById('resultsTitle');
+            
+            let movies = Object.values(moviesDB);
+            
+            // Filter by category
+            if (currentFilter !== 'all') {
+                movies = movies.filter(m => m.category === currentFilter);
+            }
+            
+            // Filter by search query
+            if (searchQuery) {
+                movies = movies.filter(m => 
+                    m.title.toLowerCase().includes(searchQuery) ||
+                    m.description.toLowerCase().includes(searchQuery) ||
+                    m.genre.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            // Update title
+            if (searchQuery) {
+                resultsTitle.textContent = `Search results for "${searchQuery}"`;
+            } else if (currentFilter !== 'all') {
+                resultsTitle.textContent = currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1) + ' Movies';
+            } else {
+                resultsTitle.textContent = 'All Movies';
+            }
+            
+            // Render results
+            if (movies.length === 0) {
+                resultsGrid.innerHTML = '<div class="no-results">No movies found</div>';
+            } else {
+                resultsGrid.innerHTML = movies.map(movie => `
+                    <div class="movie-card" onclick="showMovieModal('${movie.id}')">
+                        <img src="${movie.poster}" alt="${movie.title}">
+                        <div class="movie-card-overlay">
+                            <div class="movie-card-title">${movie.title}</div>
+                            <div class="movie-card-meta">
+                                <span>⭐ ${movie.rating}</span>
+                                <span>${movie.year}</span>
+                            </div>
+                            <div class="movie-card-actions">
+                                <button class="card-btn card-btn-play" onclick="event.stopPropagation(); playMovie('${movie.id}')">▶ Play</button>
+                                <button class="card-btn card-btn-info" onclick="event.stopPropagation(); showMovieModal('${movie.id}')">ℹ Info</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            performSearch();
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                performSearch();
+            });
+        });
+
+        // Initial load
+        performSearch();
+    </script>
+</body>
+</html>

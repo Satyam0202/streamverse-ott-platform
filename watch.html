@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch - StreamVerse</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .watch-container {
+            background: #000;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        
+        .video-player {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #000;
+        }
+        
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+        
+        .player-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 40px 20px 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .player-wrapper:hover .player-controls {
+            opacity: 1;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .progress-filled {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #00f5ff);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .controls-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .controls-left, .controls-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            color: #ff006e;
+            transform: scale(1.2);
+        }
+        
+        .time-display {
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .volume-slider {
+            width: 80px;
+        }
+        
+        .movie-info-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .movie-details {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .movie-poster {
+            width: 100%;
+            border-radius: 20px;
+        }
+        
+        .movie-info h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+        
+        .movie-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: #aaa;
+        }
+        
+        .movie-description {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-5px);
+        }
+        
+        @media (max-width: 768px) {
+            .movie-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watch-container">
+        <!-- Navbar -->
+        <nav class="navbar scrolled">
+            <div class="nav-container">
+                <div class="logo">
+                    <span class="logo-text">Stream</span><span class="logo-accent">Verse</span>
+                </div>
+                <button class="back-btn" onclick="window.location.href='index.html'">← Back to Home</button>
+            </div>
+        </nav>
+
+        <!-- Video Player -->
+        <div class="video-player">
+            <div class="player-wrapper">
+                <video id="videoPlayer" poster="">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                
+                <div class="player-controls">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-filled" id="progressFilled"></div>
+                    </div>
+                    <div class="controls-bottom">
+                        <div class="controls-left">
+                            <button class="control-btn" id="playPauseBtn">▶</button>
+                            <button class="control-btn" id="rewindBtn">⏪</button>
+                            <button class="control-btn" id="forwardBtn">⏩</button>
+                            <span class="time-display">
+                                <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                            </span>
+                        </div>
+                        <div class="controls-right">
+                            <div class="volume-control">
+                                <button class="control-btn" id="muteBtn">🔊</button>
+                                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+                            </div>
+                            <select id="speedControl" style="background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                                <option value="0.5">0.5x</option>
+                                <option value="0.75">0.75x</option>
+                                <option value="1" selected>1x</option>
+                                <option value="1.25">1.25x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="2">2x</option>
+                            </select>
+                            <button class="control-btn" id="pipBtn">📺</button>
+                            <button class="control-btn" id="fullscreenBtn">⛶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movie Info -->
+        <div class="movie-info-section">
+            <div class="movie-details">
+                <img id="moviePoster" class="movie-poster" src="" alt="">
+                <div class="movie-info">
+                    <h1 id="movieTitle"></h1>
+                    <div class="movie-meta">
+                        <span id="movieRating"></span>
+                        <span id="movieYear"></span>
+                        <span id="movieDuration"></span>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <span id="movieGenre" style="background: rgba(255,0,110,0.2); padding: 8px 20px; border-radius: 20px;"></span>
+                    </div>
+                    <p class="movie-description" id="movieDescription"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="player.js"></script>
+</body>
+</html>

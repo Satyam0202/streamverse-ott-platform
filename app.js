@@ -98,11 +98,40 @@ function renderMovieCard(movie, showProgress = false) {
 
 // Load Movies by Category
 function loadMoviesByCategory(category, containerId) {
+    console.log(`🎬 Loading category: ${category} into ${containerId}`);
     const container = document.getElementById(containerId);
-    if (!container) return;
+    if (!container) {
+        console.log(`❌ Container ${containerId} not found`);
+        return;
+    }
     
-    const movies = Object.values(moviesDB).filter(m => m.category === category);
-    container.innerHTML = movies.map(m => renderMovieCard(m)).join('');
+    // Get movies from moviesDB
+    let content = Object.values(moviesDB).filter(m => m.category === category);
+    console.log(`  Movies found: ${content.length}`);
+    
+    // Add series from seriesDB if available
+    if (typeof window.seriesDB !== 'undefined' && typeof window.renderSeriesCard !== 'undefined') {
+        const series = Object.values(window.seriesDB).filter(s => s.category === category);
+        console.log(`  Series found: ${series.length}`, series.map(s => s.title));
+        content = [...content, ...series];
+    }
+    
+    console.log(`  Total content: ${content.length}`);
+    
+    // Render content
+    if (content.length === 0) {
+        container.innerHTML = '<p style="color: #666; padding: 20px;">No content available</p>';
+        return;
+    }
+    
+    container.innerHTML = content.map(item => {
+        if (item.type === 'series' && typeof window.renderSeriesCard !== 'undefined') {
+            return window.renderSeriesCard(item);
+        } else {
+            return renderMovieCard(item);
+        }
+    }).join('');
+    console.log(`✅ Category ${category} loaded`);
 }
 
 // Load Continue Watching
@@ -129,11 +158,26 @@ function loadTrending() {
     const container = document.getElementById('trendingMovies');
     if (!container) return;
     
-    const trending = Object.values(moviesDB)
+    // Combine movies and series
+    let allContent = Object.values(moviesDB);
+    
+    // Add series if available
+    if (typeof window.seriesDB !== 'undefined' && typeof window.renderSeriesCard !== 'undefined') {
+        allContent = [...allContent, ...Object.values(window.seriesDB)];
+    }
+    
+    // Sort by rating and get top 6
+    const trending = allContent
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 6);
     
-    container.innerHTML = trending.map(m => renderMovieCard(m)).join('');
+    container.innerHTML = trending.map(item => {
+        if (item.type === 'series' && typeof window.renderSeriesCard !== 'undefined') {
+            return window.renderSeriesCard(item);
+        } else {
+            return renderMovieCard(item);
+        }
+    }).join('');
 }
 
 // Show Movie Modal
@@ -177,14 +221,20 @@ function playMovie(movieId) {
 }
 
 // Play Trailer
-function playTrailer(movieId) {
-    const movie = moviesDB[movieId];
-    if (!movie) return;
+function playTrailer(id) {
+    let content = moviesDB[id];
+    
+    // Check if it's a series
+    if (!content && typeof window.seriesDB !== 'undefined') {
+        content = window.seriesDB[id];
+    }
+    
+    if (!content) return;
     
     const modal = document.getElementById('trailerModal');
     const container = document.getElementById('trailerContainer');
     
-    container.innerHTML = `<iframe src="${movie.trailer}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    container.innerHTML = `<iframe src="${content.trailer}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     modal.classList.add('active');
 }
 
@@ -230,14 +280,35 @@ document.addEventListener('DOMContentLoaded', () => {
         adminBtn.style.display = 'block';
     }
     
-    // Load content
-    loadContinueWatching();
-    loadTrending();
-    loadMoviesByCategory('action', 'actionMovies');
-    loadMoviesByCategory('drama', 'dramaMovies');
-    loadMoviesByCategory('scifi', 'scifiMovies');
-    loadMoviesByCategory('comedy', 'comedyMovies');
-    loadMoviesByCategory('horror', 'horrorMovies');
+    // Load content - wait for series.js to load
+    function loadAllContent() {
+        console.log('🎬 Loading all content...');
+        console.log('seriesDB available:', typeof window.seriesDB !== 'undefined');
+        console.log('renderSeriesCard available:', typeof window.renderSeriesCard !== 'undefined');
+        
+        loadContinueWatching();
+        loadSeriesContent();
+        loadTrending();
+        loadMoviesByCategory('action', 'actionMovies');
+        loadMoviesByCategory('drama', 'dramaMovies');
+        loadMoviesByCategory('scifi', 'scifiMovies');
+        loadMoviesByCategory('comedy', 'comedyMovies');
+        loadMoviesByCategory('horror', 'horrorMovies');
+        
+        console.log('✅ All content loaded!');
+    }
+    
+    // Check if seriesDB is loaded, if not wait a bit
+    if (typeof window.seriesDB !== 'undefined') {
+        console.log('✅ seriesDB found immediately, loading content...');
+        loadAllContent();
+    } else {
+        console.log('⏳ Waiting for seriesDB to load...');
+        setTimeout(() => {
+            console.log('⏰ Timeout complete, loading content...');
+            loadAllContent();
+        }, 100);
+    }
     
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
@@ -250,6 +321,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Load series content function
+function loadSeriesContent() {
+    console.log('📺 loadSeriesContent called');
+    const container = document.getElementById('seriesContent');
+    if (!container) {
+        console.log('❌ seriesContent container not found');
+        return;
+    }
+    
+    // Check if seriesDB is available
+    if (typeof window.seriesDB === 'undefined' || typeof window.renderSeriesCard === 'undefined') {
+        console.log('⚠️ seriesDB or renderSeriesCard not available yet');
+        return;
+    }
+    
+    const series = Object.values(window.seriesDB);
+    console.log(`📊 Found ${series.length} series:`, series.map(s => s.title));
+    
+    if (series.length === 0) {
+        container.innerHTML = '<p style="color: #666; padding: 20px;">No series available</p>';
+        return;
+    }
+    
+    container.innerHTML = series.map(s => window.renderSeriesCard(s)).join('');
+    console.log('✅ Series content loaded successfully');
+}
+
 // Export for other pages
 if (typeof window !== 'undefined') {
     window.moviesDB = moviesDB;
@@ -257,4 +355,5 @@ if (typeof window !== 'undefined') {
     window.addToWatchHistory = addToWatchHistory;
     window.getMyList = getMyList;
     window.addToMyList = addToMyList;
+    window.loadSeriesContent = loadSeriesContent;
 }

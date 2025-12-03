@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Series - StreamVerse</title>
+    <link rel="icon" type="image/png" href="ott.png">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .watch-container {
+            background: #000;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        
+        .video-player {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #000;
+        }
+        
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+        
+        .player-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .telegram-post {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 500px;
+        }
+        
+        .telegram-post iframe {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .episode-info-bar {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .audio-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+        
+        .audio-label {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .audio-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .audio-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .audio-btn.active {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border-color: #ff006e;
+            box-shadow: 0 5px 20px rgba(255,0,110,0.4);
+        }
+        
+        .episode-info-bar h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .episode-info-bar p {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .episode-navigation {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border-color: transparent;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .episodes-list {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .episodes-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .episode-item {
+            display: flex;
+            gap: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .episode-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #ff006e;
+            transform: translateX(5px);
+        }
+        
+        .episode-item.active {
+            border-color: #ff006e;
+            background: rgba(255,0,110,0.1);
+        }
+        
+        .episode-item img {
+            width: 200px;
+            height: 112px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .episode-info {
+            flex: 1;
+        }
+        
+        .episode-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .episode-number {
+            color: #ff006e;
+            margin-right: 8px;
+        }
+        
+        .episode-meta {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .episode-description {
+            color: #ddd;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .episode-item {
+                flex-direction: column;
+            }
+            
+            .episode-item img {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watch-container">
+        <!-- Navbar -->
+        <nav class="navbar scrolled">
+            <div class="nav-container">
+                <div class="logo">
+                    <span class="logo-text">Stream</span><span class="logo-accent">Verse</span>
+                </div>
+                <button class="back-btn" onclick="window.location.href='index.html'" style="background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 12px 30px; border-radius: 25px; font-size: 16px; cursor: pointer;">← Back to Home</button>
+            </div>
+        </nav>
+
+        <!-- Episode Info Bar -->
+        <div class="episode-info-bar">
+            <h2 id="episodeTitle">Loading...</h2>
+            <p id="episodeMeta"></p>
+            
+            <div class="episode-navigation">
+                <button class="nav-btn" id="prevEpisodeBtn" onclick="playPreviousEpisode()">← Previous Episode</button>
+                <button class="nav-btn" id="nextEpisodeBtn" onclick="playNextEpisode()">Next Episode →</button>
+                <button class="nav-btn" onclick="window.location.href='index.html'">📺 All Episodes</button>
+            </div>
+        </div>
+
+        <!-- Video Player -->
+        <div class="video-player">
+            <div class="player-wrapper" id="playerWrapper">
+                <!-- Google Drive iframe will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Episodes List -->
+        <div class="episodes-list">
+            <h2 class="section-title">All Episodes</h2>
+            <div class="episodes-grid" id="episodesGrid"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="series.js"></script>
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const seriesId = urlParams.get('series');
+        const seasonNumber = parseInt(urlParams.get('season'));
+        const episodeNumber = parseInt(urlParams.get('episode'));
+
+        // Validate parameters
+        if (!seriesId || !seasonNumber || !episodeNumber) {
+            alert('Invalid episode!');
+            window.location.href = 'index.html';
+        }
+
+        // Get series and episode data
+        console.log('🎬 Loading episode:', seriesId, seasonNumber, episodeNumber);
+        const series = getSeriesById(seriesId);
+        const season = getSeasonData(seriesId, seasonNumber);
+        const episode = getEpisodeData(seriesId, seasonNumber, episodeNumber);
+
+        console.log('Series:', series);
+        console.log('Season:', season);
+        console.log('Episode:', episode);
+
+        if (!series || !season || !episode) {
+            alert('Episode not found!');
+            window.location.href = 'index.html';
+        }
+
+        // Load episode info
+        document.getElementById('episodeTitle').textContent = `${series.title} - S${seasonNumber} E${episodeNumber}: ${episode.title}`;
+        document.getElementById('episodeMeta').textContent = `${episode.duration} • ${episode.releaseDate}`;
+
+        // Load video player
+        console.log('📺 Loading video:', episode.videoUrl);
+        const playerWrapper = document.getElementById('playerWrapper');
+        const iframe = document.createElement('iframe');
+        iframe.src = episode.videoUrl;
+        iframe.allow = 'autoplay; encrypted-media';
+        iframe.allowFullscreen = true;
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        
+        iframe.onload = function() {
+            console.log('✅ Video iframe loaded successfully');
+        };
+        
+        iframe.onerror = function() {
+            console.error('❌ Video iframe failed to load');
+        };
+        
+        playerWrapper.appendChild(iframe);
+        console.log('✅ Iframe added to page');
+
+        // Update navigation buttons
+        const prevBtn = document.getElementById('prevEpisodeBtn');
+        const nextBtn = document.getElementById('nextEpisodeBtn');
+
+        if (episodeNumber === 1) {
+            prevBtn.disabled = true;
+        }
+
+        if (episodeNumber === season.episodes) {
+            nextBtn.disabled = true;
+        }
+
+        // Navigation functions
+        function playPreviousEpisode() {
+            if (episodeNumber > 1) {
+                playEpisode(seriesId, seasonNumber, episodeNumber - 1);
+            }
+        }
+
+        function playNextEpisode() {
+            if (episodeNumber < season.episodes) {
+                playEpisode(seriesId, seasonNumber, episodeNumber + 1);
+            }
+        }
+
+        // Load all episodes
+        function loadEpisodesList() {
+            const grid = document.getElementById('episodesGrid');
+            
+            grid.innerHTML = season.episodeList.map(ep => `
+                <div class="episode-item ${ep.episodeNumber === episodeNumber ? 'active' : ''}" 
+                     onclick="playEpisode('${seriesId}', ${seasonNumber}, ${ep.episodeNumber})">
+                    <img src="${ep.thumbnail}" alt="Episode ${ep.episodeNumber}">
+                    <div class="episode-info">
+                        <div class="episode-title">
+                            <span class="episode-number">${ep.episodeNumber}.</span>
+                            ${ep.title}
+                        </div>
+                        <div class="episode-meta">${ep.duration} • ${ep.releaseDate}</div>
+                        <div class="episode-description">${ep.description}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        loadEpisodesList();
+
+        // Track watch progress
+        addSeriesToHistory(seriesId, seasonNumber, episodeNumber, 0);
+
+        // Auto-play next episode (optional)
+        // You can add logic here to detect when video ends and auto-play next episode
+    </script>
+</body>
+</html>

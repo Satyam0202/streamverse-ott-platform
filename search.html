@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search - StreamVerse</title>
+    <link rel="icon" type="image/png" href="ott.png">
     <link rel="stylesheet" href="index.css">
     <style>
         .search-page {
@@ -127,6 +128,7 @@
     </div>
 
     <script src="app.js"></script>
+    <script src="series.js"></script>
     <script>
         // Check if admin was unlocked
         const adminBtn = document.getElementById('adminBtn');
@@ -151,15 +153,17 @@
             const resultsTitle = document.getElementById('resultsTitle');
             
             let movies = Object.values(moviesDB);
+            let series = typeof window.seriesDB !== 'undefined' ? Object.values(window.seriesDB) : [];
+            let allContent = [...movies, ...series];
             
             // Filter by category
             if (currentFilter !== 'all') {
-                movies = movies.filter(m => m.category === currentFilter);
+                allContent = allContent.filter(m => m.category === currentFilter);
             }
             
             // Filter by search query
             if (searchQuery) {
-                movies = movies.filter(m => 
+                allContent = allContent.filter(m => 
                     m.title.toLowerCase().includes(searchQuery) ||
                     m.description.toLowerCase().includes(searchQuery) ||
                     m.genre.toLowerCase().includes(searchQuery)
@@ -176,25 +180,31 @@
             }
             
             // Render results
-            if (movies.length === 0) {
-                resultsGrid.innerHTML = '<div class="no-results">No movies found</div>';
+            if (allContent.length === 0) {
+                resultsGrid.innerHTML = '<div class="no-results">No content found</div>';
             } else {
-                resultsGrid.innerHTML = movies.map(movie => `
-                    <div class="movie-card" onclick="showMovieModal('${movie.id}')">
-                        <img src="${movie.poster}" alt="${movie.title}">
-                        <div class="movie-card-overlay">
-                            <div class="movie-card-title">${movie.title}</div>
-                            <div class="movie-card-meta">
-                                <span>⭐ ${movie.rating}</span>
-                                <span>${movie.year}</span>
+                resultsGrid.innerHTML = allContent.map(item => {
+                    if (item.type === 'series') {
+                        return window.renderSeriesCard(item);
+                    } else {
+                        return `
+                            <div class="movie-card" onclick="showMovieModal('${item.id}')">
+                                <img src="${item.poster}" alt="${item.title}">
+                                <div class="movie-card-overlay">
+                                    <div class="movie-card-title">${item.title}</div>
+                                    <div class="movie-card-meta">
+                                        <span>⭐ ${item.rating}</span>
+                                        <span>${item.year}</span>
+                                    </div>
+                                    <div class="movie-card-actions">
+                                        <button class="card-btn card-btn-play" onclick="event.stopPropagation(); playMovie('${item.id}')">▶ Play</button>
+                                        <button class="card-btn card-btn-info" onclick="event.stopPropagation(); showMovieModal('${item.id}')">ℹ Info</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="movie-card-actions">
-                                <button class="card-btn card-btn-play" onclick="event.stopPropagation(); playMovie('${movie.id}')">▶ Play</button>
-                                <button class="card-btn card-btn-info" onclick="event.stopPropagation(); showMovieModal('${movie.id}')">ℹ Info</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                        `;
+                    }
+                }).join('');
             }
         }
 

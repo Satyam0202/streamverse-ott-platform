@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="r6vFg9XkJiO-e8_aGJq5pWjnLRsAghOT7ewKK2jq0Sc" />
     <title>StreamVerse - Premium OTT Platform</title>
-    <link rel="icon" type="image/png" href="ott.png"/>
+    <link rel="icon" type="image/png" href="ott.png">
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="series.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -33,24 +33,26 @@
     <section class="hero">
         <div class="hero-bg"></div>
         <div class="hero-content">
-            <h1 class="hero-title">The Dark Knight</h1>
-            <p class="hero-description">When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.</p>
+            <h1 class="hero-title">Stranger Things</h1>
+            <p class="hero-description" style="font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-weight: 400; letter-spacing: 0.3px; line-height: 1.7;">
+                Stranger Things follows the disappearance of a young boy in Hawkins, Indiana, leading his friends and family into a web of government conspiracies, secret experiments, and paranormal forces. A mysterious girl with extraordinary abilities becomes their only hope, while a terrifying dimension known as the Upside Down threatens everything they know.
+            </p>
             <div class="hero-buttons">
-                <button class="btn-play" onclick="playMovie('dark-knight')">
+                <button class="btn-play" onclick="playSeriesFromStart('stranger-things')">
                     <span>▶</span> Play Now
                 </button>
-                <button class="btn-info">
+                <button class="btn-info" onclick="showSeriesModal('stranger-things')">
                     <span>ℹ</span> More Info
                 </button>
-                <button class="btn-trailer" onclick="playTrailer('dark-knight')">
+                <button class="btn-trailer" onclick="playTrailer('stranger-things')">
                     <span>🎬</span> Trailer
                 </button>
             </div>
             <div class="hero-meta">
-                <span class="rating">⭐ 9.0</span>
-                <span class="year">2008</span>
-                <span class="duration">2h 32m</span>
-                <span class="genre">Action, Crime, Drama</span>
+                <span class="rating">⭐ 8.7</span>
+                <span class="year">2016</span>
+                <span class="duration">8 Episodes</span>
+                <span class="genre">Sci-Fi • Horror • Drama</span>
             </div>
         </div>
     </section>
@@ -59,6 +61,14 @@
     <section class="content-section">
         <h2 class="section-title">Continue Watching</h2>
         <div class="movie-row" id="continueWatching">
+            <!-- Dynamically loaded -->
+        </div>
+    </section>
+
+    <!-- TV Series -->
+    <section class="content-section">
+        <h2 class="section-title">TV Series</h2>
+        <div class="movie-row" id="seriesContent">
             <!-- Dynamically loaded -->
         </div>
     </section>
@@ -134,7 +144,6 @@
     </div>
 
     <script src="app.js"></script>
+    <script src="series.js"></script>
 </body>
 </html>
-
-

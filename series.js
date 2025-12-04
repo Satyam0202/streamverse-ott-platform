@@ -85,7 +85,7 @@ const seriesDB = {
                         duration: '41m',
                         description: 'Eleven struggles to reach Will, while Lucas warns that "the bad men are coming." Nancy and Jonathan show the police what Jonathan caught on camera.',
                         thumbnail: 'S01E07.png',
-                        videoUrl: 'https://drive.google.com/file/d/1IsUbSHqcBXb7FchWm7TeDfHsCr06RErI/view?usp=drive_link/preview',
+                        videoUrl: 'https://drive.google.com/file/d/13Rf1IcrZTXJ1v-KBHm8TFiPxSyYd0WbT/preview',
                         releaseDate: 'July 15, 2016'
                     },
                     {
@@ -311,6 +311,7 @@ if (typeof window !== 'undefined') {
     window.playSeriesFromStart = playSeriesFromStart;
     window.loadSeriesContent = loadSeriesContent;
 }
+
 
 
 

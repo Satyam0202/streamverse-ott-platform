@@ -76,7 +76,7 @@ const seriesDB = {
                         description: 'A frantic Jonathan looks for Nancy in the darkness, but Steve\'s looking for her, too. Hopper and Joyce uncover the truth about the lab\'s experiments.',
                         thumbnail: 'S01E06.png',
                         // videoUrl: 'https://drive.google.com/file/d/1OVETghmdspFiIOI5Uqn-9in_aqu7vkxr/preview',
-                        videoUrl:'https://drive.google.com/file/d/1OVETghmdspFiIOI5Uqn-9in_aqu7vkxr/preview',
+                        videoUrl:'https://drive.google.com/file/d/13Rf1IcrZTXJ1v-KBHm8TFiPxSyYd0WbT/preview',
                         releaseDate: 'July 15, 2016'
                     },
                     {
@@ -311,6 +311,7 @@ if (typeof window !== 'undefined') {
     window.playSeriesFromStart = playSeriesFromStart;
     window.loadSeriesContent = loadSeriesContent;
 }
+
 
 
 

@@ -84,7 +84,7 @@ const seriesDB = {
                         duration: '41m',
                         description: 'Eleven struggles to reach Will, while Lucas warns that "the bad men are coming." Nancy and Jonathan show the police what Jonathan caught on camera.',
                         thumbnail: 'S01E07.png',
-                        videoUrl: 'https://drive.google.com/file/d/FAKE_LINK_EPISODE_7/preview',
+                        videoUrl: 'https://drive.google.com/file/d/1IsUbSHqcBXb7FchWm7TeDfHsCr06RErI/view?usp=drive_link/preview',
                         releaseDate: 'July 15, 2016'
                     },
                     {
@@ -93,7 +93,7 @@ const seriesDB = {
                         duration: '54m',
                         description: 'Dr. Brenner holds Hopper and Joyce for questioning while the boys wait with Eleven in the gym. Back at Will\'s, Nancy and Jonathan prepare for battle.',
                         thumbnail: 'S01E08.png',
-                        videoUrl: 'https://drive.google.com/file/d/FAKE_LINK_EPISODE_8/preview',
+                        videoUrl: 'https://drive.',
                         releaseDate: 'July 15, 2016'
                     }
                 ]
@@ -310,4 +310,5 @@ if (typeof window !== 'undefined') {
     window.playSeriesFromStart = playSeriesFromStart;
     window.loadSeriesContent = loadSeriesContent;
 }
+
 

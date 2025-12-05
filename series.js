@@ -112,7 +112,7 @@ const seriesDB = {
             duration: '48m',
             description: 'As the town preps for Halloween, a high-scoring rival shakes things up at the arcade, and a skeptical Hopper inspects a field of rotting pumpkins.',
             thumbnail: 'S02E01.png',
-            videoUrl: 'https://drive.google.com/file/d/FAKE_LINK_S2E1/preview',
+            videoUrl: 'https://drive.google.com/file/d/1jAPP1g8L5vf9YHNPcYC52ghOkefIYUEJ/preview',
             releaseDate: 'October 27, 2017'
           },
           {
@@ -458,3 +458,4 @@ if(typeof window !== 'undefined') {
   window.playSeriesFromStart = playSeriesFromStart;
   window.loadSeriesContent = loadSeriesContent;
 }
+

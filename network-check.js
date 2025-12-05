@@ -23,15 +23,15 @@ function createNetworkOverlay() {
   `;
   
   networkOverlay.innerHTML = `
-    <img src="no_internet.png" alt="No Internet" style="
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    <div style="
       position: absolute;
       top: 0;
       left: 0;
-      animation: pulse 2s infinite;
-    ">
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      animation: gradientShift 3s ease infinite;
+    "></div>
     <div style="
       position: relative;
       z-index: 1;
@@ -39,14 +39,16 @@ function createNetworkOverlay() {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 40px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
+      text-align: center;
     ">
-      <h2 style="color: white; font-size: 32px; margin-bottom: 15px; text-align: center;">No Internet Connection</h2>
-      <p style="color: #aaa; font-size: 18px; text-align: center; max-width: 500px; margin-bottom: 30px;">
-        Please check your internet connection and try again.
+      <div style="
+        font-size: 120px;
+        margin-bottom: 30px;
+        animation: float 3s ease-in-out infinite;
+      ">📡</div>
+      <h2 style="color: white; font-size: 32px; margin-bottom: 15px; text-align: center; font-weight: 700;">No Internet Connection</h2>
+      <p style="color: #aaa; font-size: 18px; text-align: center; max-width: 500px; margin-bottom: 30px; line-height: 1.6;">
+        Oops! It seems you're offline. Please check your internet connection and try again.
       </p>
       <button onclick="checkConnection()" style="
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -58,8 +60,9 @@ function createNetworkOverlay() {
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
       ">
-        Retry Connection
+        🔄 Retry Connection
       </button>
     </div>
   `;
@@ -68,13 +71,21 @@ function createNetworkOverlay() {
   
   const style = document.createElement('style');
   style.textContent = `
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(0.95); }
+    @keyframes gradientShift {
+      0%, 100% { 
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      }
+      50% { 
+        background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #1a1a2e 100%);
+      }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
     }
     #networkOverlay button:hover {
       transform: scale(1.05);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
     }
     @media (max-width: 768px) {
       #networkOverlay h2 {
@@ -84,9 +95,8 @@ function createNetworkOverlay() {
         font-size: 16px !important;
         padding: 0 20px;
       }
-      #networkOverlay > div {
-        padding: 30px 20px !important;
-        width: 90%;
+      #networkOverlay > div > div:first-child {
+        font-size: 80px !important;
       }
       #networkOverlay button {
         padding: 12px 30px !important;
@@ -100,8 +110,9 @@ function createNetworkOverlay() {
       #networkOverlay p {
         font-size: 14px !important;
       }
-      #networkOverlay > div {
-        padding: 20px 15px !important;
+      #networkOverlay > div > div:first-child {
+        font-size: 60px !important;
+        margin-bottom: 20px !important;
       }
       #networkOverlay button {
         padding: 10px 25px !important;
